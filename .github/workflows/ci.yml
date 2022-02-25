@@ -5,22 +5,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node_version: 14.x
+          node-version: 14.x
 
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ~/cache
+            !~/cache/exclude
+            **/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Linting
-        run: npm run lint
+        run: yarn lint
 
       - name: Test
-        run: npm run test
+        run: yarn test:ci
 
       - name: Build
-        run: npm run build
+        run: yarn build
